@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATA RAENA KOST</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Arial', 'Helvetica', 'sans-serif'],
+                    },
+                    colors: {
+                        kost: {
+                            dark: '#121212',
+                            darker: '#0a0a0a',
+                            card: '#1e1e1e',
+                            light: '#f3f4f6',
+                            primary: '#3b82f6',
+                            success: '#10b981',
+                            danger: '#ef4444',
+                            warning: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif !important; }
+        
+        /* 3D Login Card */
+        .login-3d {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
+        }
+        .login-3d:hover {
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.6), 0 15px 15px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Resident ID Card Style */
+        .id-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .light .id-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hide scrollbar for tabs */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="bg-kost-light text-gray-800 dark:bg-kost-darker dark:text-gray-200 transition-colors duration-300 min-h-screen relative">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-kost-light dark:bg-kost-darker bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        <div class="login-3d bg-white dark:bg-kost-card p-8 rounded-2xl w-full max-w-md mx-4 relative overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div class="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4 shadow-inner">
+                    <i class="fa-solid fa-building-user text-4xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold uppercase tracking-wider text-gray-900 dark:text-white">Raena Kost</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 font-semibold">Sistem Manajemen Kost</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold mb-2">Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="loginUsername" class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-kost-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:text-white" placeholder="Masukkan Username" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="loginPassword" class="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-kost-dark focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:text-white" placeholder="Masukkan Password" required>
+                        <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-blue-500">
+                            <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="loginError" class="hidden text-red-500 text-sm font-bold text-center">Username atau Password Salah!</div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg transform active:scale-95">
+                    MASUK SISTEM
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION -->
+    <div id="mainApp" class="hidden min-h-screen flex flex-col">
+        
+        <!-- Header & Nav -->
+        <header class="bg-white dark:bg-kost-card shadow-md sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-house-chimney text-blue-500 text-2xl"></i>
+                        <span class="font-bold text-xl uppercase tracking-wider hidden sm:block">RAENA KOST</span>
+                    </div>
+                    
+                    <!-- Tabs Centered -->
+                    <nav class="flex-1 flex justify-center overflow-x-auto no-scrollbar mx-4">
+                        <div class="flex space-x-1 sm:space-x-4">
+                            <button onclick="switchTab('dashboard')" class="tab-btn active px-3 sm:px-4 py-2 rounded-lg font-bold text-sm transition-colors text-blue-600 bg-blue-100 dark:bg-blue-900/30">
+                                <i class="fa-solid fa-chart-pie mr-2"></i>Dashboard
+                            </button>
+                            <button onclick="switchTab('kamar')" class="tab-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-sm transition-colors text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                                <i class="fa-solid fa-door-closed mr-2"></i>Kamar
+                            </button>
+                            <button onclick="switchTab('penghuni')" class="tab-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-sm transition-colors text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                                <i class="fa-solid fa-users mr-2"></i>Penghuni
+                            </button>
+                            <button onclick="switchTab('penghasilan')" class="tab-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-sm transition-colors text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                                <i class="fa-solid fa-wallet mr-2"></i>Penghasilan
+                            </button>
+                            <button onclick="switchTab('grafik')" class="tab-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-sm transition-colors text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                                <i class="fa-solid fa-chart-line mr-2"></i>Grafik
+                            </button>
+                            <!-- Admin Tab (Hidden by default) -->
+                            <button id="adminTabBtn" onclick="switchTab('admin')" class="hidden tab-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-sm transition-colors text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30">
+                                <i class="fa-solid fa-screwdriver-wrench mr-2"></i>Admin
+                            </button>
+                        </div>
+                    </nav>
+
+                    <div class="flex items-center gap-4">
+                        <button id="themeToggle" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white p-2">
+                            <i class="fa-solid fa-sun text-xl hidden dark:block"></i>
+                            <i class="fa-solid fa-moon text-xl block dark:hidden"></i>
+                        </button>
+                        <button onclick="logout()" class="text-red-500 font-bold hover:text-red-700 text-sm">
+                            <i class="fa-solid fa-power-off mr-1"></i>Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Centered Back Button (Visible on non-dashboard) -->
+        <div id="backToDashContainer" class="hidden w-full flex justify-center py-4 bg-transparent absolute top-16 z-30 pointer-events-none">
+            <button onclick="switchTab('dashboard')" class="pointer-events-auto bg-gray-800 text-white dark:bg-white dark:text-black font-bold py-2 px-6 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2 border-2 border-transparent">
+                <i class="fa-solid fa-arrow-left"></i> KEMBALI KE DASHBOARD
+            </button>
+        </div>
+
+        <!-- Pages Content -->
+        <main class="flex-1 container mx-auto px-4 py-8 mt-4 sm:mt-8">
+            
+            <!-- DASHBOARD -->
+            <div id="page-dashboard" class="page-content block space-y-6">
+                <!-- Top Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 text-white shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-bold opacity-80 uppercase tracking-wider">Total Penghuni</p>
+                                <h3 class="text-4xl font-bold mt-1" id="dashTotalPenghuni">0</h3>
+                            </div>
+                            <i class="fa-solid fa-users text-5xl opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-6 text-white shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-bold opacity-80 uppercase tracking-wider">Kamar Kosong</p>
+                                <h3 class="text-4xl font-bold mt-1" id="dashKamarKosong">0</h3>
+                            </div>
+                            <i class="fa-solid fa-door-open text-5xl opacity-50"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-6 text-white shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-bold opacity-80 uppercase tracking-wider">Pendapatan Bulan Ini</p>
+                                <h3 class="text-2xl font-bold mt-1" id="dashPendapatan">Rp 0</h3>
+                            </div>
+                            <i class="fa-solid fa-money-bill-wave text-5xl opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-kost-card p-4 rounded-xl shadow">
+                    <h2 class="text-xl font-bold">Status Penghuni (<span id="currentMonthName"></span>)</h2>
+                    <div class="flex gap-2 mt-4 sm:mt-0">
+                        <select id="dashMonthFilter" class="bg-gray-100 dark:bg-kost-dark border border-gray-300 dark:border-gray-600 rounded px-3 py-1 font-bold">
+                            <!-- Populated by JS -->
+                        </select>
+                        <select id="dashYearFilter" class="bg-gray-100 dark:bg-kost-dark border border-gray-300 dark:border-gray-600 rounded px-3 py-1 font-bold">
+                            <option value="all">Semua Tahun</option>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Cards Grid -->
+                <div id="dashCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards injected here -->
+                </div>
+            </div>
+
+            <!-- STATUS KAMAR -->
+            <div id="page-kamar" class="page-content hidden space-y-6 pt-10">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold uppercase border-b-4 border-blue-500 pb-2 inline-block">Denah Kamar</h2>
+                    <button onclick="openModal('modalAddRoom')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow">
+                        <i class="fa-solid fa-plus mr-2"></i>Tambah Kamar
+                    </button>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Lantai Bawah -->
+                    <div class="bg-white dark:bg-kost-card rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-center bg-gray-200 dark:bg-gray-800 py-2 rounded-lg">LANTAI BAWAH</h3>
+                        <div id="kamarLantaiBawah" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+
+                    <!-- Lantai Atas -->
+                    <div class="bg-white dark:bg-kost-card rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-xl font-bold mb-4 text-center bg-gray-200 dark:bg-gray-800 py-2 rounded-lg">LANTAI ATAS</h3>
+                        <div id="kamarLantaiAtas" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA PENGHUNI -->
+            <div id="page-penghuni" class="page-content hidden space-y-6 pt-10">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold uppercase border-b-4 border-blue-500 pb-2 inline-block">Data Penyewa</h2>
+                    <button onclick="openModal('modalAddResident')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow">
+                        <i class="fa-solid fa-user-plus mr-2"></i>Registrasi Baru
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-kost-card rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold uppercase text-sm border-b dark:border-gray-700">
+                                    <th class="p-4">Kamar</th>
+                                    <th class="p-4">Nama Lengkap</th>
+                                    <th class="p-4">WA</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Masuk</th>
+                                    <th class="p-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablePenghuni" class="divide-y divide-gray-200 dark:divide-gray-700 font-bold">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA PENGHASILAN -->
+            <div id="page-penghasilan" class="page-content hidden space-y-6 pt-10">
+                <div class="flex flex-col sm:flex-row justify-between items-center">
+                    <h2 class="text-2xl font-bold uppercase border-b-4 border-blue-500 pb-2 inline-block">Data Penghasilan</h2>
+                    <div class="flex gap-2 mt-4 sm:mt-0">
+                        <select id="incomeMonthFilter" class="bg-white dark:bg-kost-card border border-gray-300 dark:border-gray-600 rounded px-3 py-2 font-bold shadow">
+                            <option value="all">Semua Bulan</option>
+                            <!-- Injected -->
+                        </select>
+                        <select id="incomeYearFilter" class="bg-white dark:bg-kost-card border border-gray-300 dark:border-gray-600 rounded px-3 py-2 font-bold shadow">
+                            <option value="all">Semua Tahun</option>
+                            <!-- Injected -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Summary Panel -->
+                <div class="bg-blue-600 text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
+                    <div>
+                        <p class="text-sm font-bold uppercase tracking-wider opacity-80">Total Sesuai Filter</p>
+                        <h3 class="text-3xl font-bold" id="totalFilteredIncome">Rp 0</h3>
+                    </div>
+                    <i class="fa-solid fa-sack-dollar text-5xl opacity-30"></i>
+                </div>
+
+                <div class="bg-white dark:bg-kost-card rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold uppercase text-sm border-b dark:border-gray-700">
+                                    <th class="p-4">Bulan/Tahun</th>
+                                    <th class="p-4">Kamar</th>
+                                    <th class="p-4">Nama</th>
+                                    <th class="p-4 text-right">Sewa Dasar</th>
+                                    <th class="p-4 text-right">Denda</th>
+                                    <th class="p-4 text-right">Total Bayar</th>
+                                    <th class="p-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablePenghasilan" class="divide-y divide-gray-200 dark:divide-gray-700 font-bold">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRAFIK -->
+            <div id="page-grafik" class="page-content hidden space-y-6 pt-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold uppercase border-b-4 border-blue-500 pb-2 inline-block">Statistik Pendapatan</h2>
+                    <select id="chartYearFilter" class="bg-white dark:bg-kost-card border border-gray-300 dark:border-gray-600 rounded px-3 py-2 font-bold shadow">
+                        <!-- Injected -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white dark:bg-kost-card p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase">Bulan Ini vs Bulan Lalu</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span id="trendIndicator" class="text-3xl"><i class="fa-solid fa-minus text-gray-500"></i></span>
+                                <span id="trendText" class="text-xl font-bold">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-kost-card p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <p class="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase">Total Pendapatan Tahunan</p>
+                        <h3 id="chartTotalYear" class="text-3xl font-bold mt-2 text-blue-600 dark:text-blue-400">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-kost-card p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 relative w-full h-[400px]">
+                    <canvas id="incomeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- ADMIN MAINTENANCE (Hidden) -->
+            <div id="page-admin" class="page-content hidden space-y-6 pt-10">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-red-600 uppercase border-b-4 border-red-600 pb-2 inline-block">Manajemen Admin</h2>
+                    <button onclick="openModal('modalAddAdmin')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow">
+                        <i class="fa-solid fa-plus mr-2"></i>Admin Baru
+                    </button>
+                </div>
+                
+                <div class="bg-white dark:bg-kost-card rounded-xl shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 dark:bg-gray-800 uppercase text-sm border-b dark:border-gray-700">
+                            <tr>
+                                <th class="p-4 font-bold">Username</th>
+                                <th class="p-4 font-bold">Nama Lengkap</th>
+                                <th class="p-4 font-bold">WhatsApp</th>
+                                <th class="p-4 font-bold text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableAdmins" class="divide-y divide-gray-200 dark:divide-gray-700 font-bold">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Modal Success -->
+    <div id="modalSuccess" class="fixed inset-0 z-[60] hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-kost-card rounded-2xl p-8 max-w-sm w-full text-center border-t-8 border-green-500 shadow-2xl scale-0 transition-transform duration-300" id="modalSuccessContent">
+            <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-check text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-black uppercase text-gray-900 dark:text-white mb-2">TERIMA KASIH</h2>
+            <h3 class="text-xl font-bold text-green-600 dark:text-green-400 mb-4">PENDAFTARAN SELESAI</h3>
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400">Silahkan konfirmasi ke pemilik admin bahwa anda sudah mendaftarkan diri.</p>
+            <button onclick="closeModal('modalSuccess')" class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-8 rounded-full">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Penghuni -->
+    <div id="modalAddResident" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-kost-card rounded-xl shadow-2xl w-full max-w-2xl border border-gray-200 dark:border-gray-700 my-8">
+            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-xl">
+                <h3 class="font-bold text-lg uppercase" id="residentModalTitle">Registrasi Penghuni Baru</h3>
+                <button onclick="closeModal('modalAddResident')" class="text-gray-500 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 max-h-[70vh] overflow-y-auto custom-scroll">
+                <form id="formResident" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="hidden" id="resId">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1">Nama Lengkap (Sesuai KTP)</label>
+                        <input type="text" id="resName" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold uppercase" required>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1">Alamat Tempat Tinggal</label>
+                        <textarea id="resAddress" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" rows="2" required></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Nomor Whatsapp Aktif</label>
+                        <input type="text" id="resWa" pattern="[0-9]*" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="Contoh: 0812..." required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Nomor Whatsapp Orang Tua</label>
+                        <input type="text" id="resWaParent" pattern="[0-9]*" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="Tidak Wajib">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Status</label>
+                        <select id="resStatus" class="w-full p-2 border dark:border-gray-600 rounded bg-white dark:bg-kost-dark font-bold" required>
+                            <option value="Kerja">Kerja</option>
+                            <option value="Kuliah">Kuliah</option>
+                            <option value="Freelance">Free lance</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Pilih Kamar</label>
+                        <select id="resRoom" class="w-full p-2 border dark:border-gray-600 rounded bg-white dark:bg-kost-dark font-bold" required>
+                            <!-- Injected -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Harga Sewa Kamar (Rp)</label>
+                        <input type="number" id="resPrice" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Tanggal Masuk</label>
+                        <input type="date" id="resEntry" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1 text-red-500">Jatuh Tempo Per Tanggal</label>
+                        <input type="number" id="resDue" min="1" max="31" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="1-31" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Upload KTP</label>
+                        <input type="file" class="w-full p-1.5 border dark:border-gray-600 rounded bg-transparent font-bold text-sm">
+                        <small class="text-gray-500">*Tidak Wajib (Simulasi)</small>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-1">Keterangan</label>
+                        <input type="text" id="resNotes" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="Tidak wajib">
+                    </div>
+                </form>
+            </div>
+            <div class="p-4 border-t dark:border-gray-700 text-right bg-gray-50 dark:bg-gray-800 rounded-b-xl flex justify-end gap-2">
+                <button type="button" onclick="closeModal('modalAddResident')" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-black dark:text-white font-bold rounded">Batal</button>
+                <button type="button" onclick="saveResident()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail Penghuni (View Only) -->
+    <div id="modalViewResident" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-kost-card rounded-xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                <h3 class="font-bold text-lg uppercase">Detail Penghuni</h3>
+                <button onclick="closeModal('modalViewResident')" class="text-gray-500 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-3 font-bold text-sm" id="viewResidentContent">
+                <!-- Injected -->
+            </div>
+            <div class="p-4 border-t dark:border-gray-700 text-center">
+                <button onclick="closeModal('modalViewResident')" class="px-6 py-2 bg-gray-600 text-white font-bold rounded-full">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Kamar -->
+    <div id="modalAddRoom" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-kost-card rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                <h3 class="font-bold text-lg uppercase">Tambah Kamar Manual</h3>
+                <button onclick="closeModal('modalAddRoom')" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-4">
+                <div>
+                    <label class="block font-bold mb-1">Nomor Kamar</label>
+                    <input type="text" id="roomNum" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold uppercase" required>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Lantai</label>
+                    <select id="roomFloor" class="w-full p-2 border dark:border-gray-600 rounded bg-white dark:bg-kost-dark font-bold">
+                        <option value="bawah">Lantai Bawah</option>
+                        <option value="atas">Lantai Atas</option>
+                    </select>
+                </div>
+                <button onclick="saveRoom()" class="w-full py-2 bg-blue-600 text-white font-bold rounded">Simpan Kamar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Denda / Edit Penghasilan -->
+    <div id="modalAddDenda" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-kost-card rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                <h3 class="font-bold text-lg uppercase">Atur Denda / Bayar</h3>
+                <button onclick="closeModal('modalAddDenda')" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-4">
+                <input type="hidden" id="dendaResId">
+                <input type="hidden" id="dendaMonth">
+                <div>
+                    <label class="block font-bold mb-1">Nama Penghuni</label>
+                    <input type="text" id="dendaName" class="w-full p-2 border dark:border-gray-600 rounded bg-gray-100 dark:bg-gray-800 font-bold" readonly>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1 text-red-500">Nominal Denda (Rp)</label>
+                    <input type="number" id="dendaAmount" class="w-full p-2 border border-red-300 dark:border-red-800 rounded bg-transparent font-bold">
+                </div>
+                <button onclick="saveDenda()" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Add Admin -->
+    <div id="modalAddAdmin" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-kost-card rounded-xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                <h3 class="font-bold text-lg uppercase text-red-600">Registrasi Admin</h3>
+                <button onclick="closeModal('modalAddAdmin')" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-4">
+                <input type="text" id="admUser" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="Username">
+                <input type="text" id="admPass" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="Password">
+                <input type="text" id="admName" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="Nama Lengkap">
+                <input type="text" id="admWa" pattern="[0-9]*" class="w-full p-2 border dark:border-gray-600 rounded bg-transparent font-bold" placeholder="Nomor WhatsApp">
+                <button onclick="saveAdmin()" class="w-full py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded">Simpan Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STATE (WITH LOCAL STORAGE PERSISTENCE) ---
+        const DEFAULT_DATA = {
+            admins: [
+                { id: 1, user: 'raenakost69', pass: 'kostputri2026', name: 'Admin Utama', wa: '08123456789' },
+                { id: 2, user: 'admin2026', pass: 'admin2026', name: 'Maintenance', wa: '08000000000' }
+            ],
+            rooms: [
+                { id: 'R1', num: 'A1', floor: 'bawah' }, { id: 'R2', num: 'A2', floor: 'bawah' },
+                { id: 'R3', num: 'A3', floor: 'bawah' }, { id: 'R4', num: 'A4', floor: 'bawah' },
+                { id: 'R5', num: 'B1', floor: 'atas' }, { id: 'R6', num: 'B2', floor: 'atas' }
+            ],
+            residents: [
+                {
+                    id: 'P1', roomId: 'R1', name: 'Siti Aisyah', address: 'Jakarta', wa: '08121111', waParent: '',
+                    status: 'Kuliah', price: 1500000, entry: '2025-01-10', due: 10, notes: '',
+                    payments: { '2026-06': { paid: true, fine: 0 }, '2026-05': { paid: true, fine: 0 } }
+                },
+                {
+                    id: 'P2', roomId: 'R5', name: 'Rina Nose', address: 'Bandung', wa: '08122222', waParent: '',
+                    status: 'Kerja', price: 1700000, entry: '2026-02-15', due: 15, notes: '',
+                    payments: { '2026-06': { paid: false, fine: 0 } }
+                }
+            ],
+            currentUser: null,
+            currentMonthStr: '',
+            chartInstance: null
+        };
+
+        const APP_DATA = {
+            admins: JSON.parse(localStorage.getItem('raenakost_admins')) || DEFAULT_DATA.admins,
+            rooms: JSON.parse(localStorage.getItem('raenakost_rooms')) || DEFAULT_DATA.rooms,
+            residents: JSON.parse(localStorage.getItem('raenakost_residents')) || DEFAULT_DATA.residents,
+            currentUser: null,
+            currentMonthStr: '',
+            chartInstance: null
+        };
+
+        // Save state to localStorage helper function
+        function saveToLocalStorage() {
+            localStorage.setItem('raenakost_admins', JSON.stringify(APP_DATA.admins));
+            localStorage.setItem('raenakost_rooms', JSON.stringify(APP_DATA.rooms));
+            localStorage.setItem('raenakost_residents', JSON.stringify(APP_DATA.residents));
+        }
+
+        // Initialize Dates
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonthNum = String(today.getMonth() + 1).padStart(2, '0');
+        APP_DATA.currentMonthStr = `${currentYear}-${currentMonthNum}`;
+
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+        // --- THEME LOGIC ---
+        const htmlDoc = document.documentElement;
+        const themeBtn = document.getElementById('themeToggle');
+        
+        themeBtn.addEventListener('click', () => {
+            htmlDoc.classList.toggle('dark');
+            htmlDoc.classList.toggle('light');
+            if(APP_DATA.chartInstance) renderChart(); // redraw chart with new theme colors
+        });
+
+        // --- GLOBAL EVENT LISTENERS ---
+        // Enter key to submit forms
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                if(!document.getElementById('loginScreen').classList.contains('hidden')) {
+                    e.preventDefault();
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.add('hidden');
+                if(event.target.id === 'modalSuccess') {
+                    document.getElementById('modalSuccessContent').classList.remove('scale-100');
+                    document.getElementById('modalSuccessContent').classList.add('scale-0');
+                }
+            }
+        }
+
+        // --- LOGIN LOGIC ---
+        document.getElementById('togglePasswordBtn').addEventListener('click', () => {
+            const pwd = document.getElementById('loginPassword');
+            const icon = document.getElementById('eyeIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwd.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value;
+            const p = document.getElementById('loginPassword').value;
+            const err = document.getElementById('loginError');
+
+            const user = APP_DATA.admins.find(a => a.user === u && a.pass === p);
+            if (user) {
+                APP_DATA.currentUser = user;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // Show admin tab if maintenance user
+                if(user.user === 'admin2026') {
+                    document.getElementById('adminTabBtn').classList.remove('hidden');
+                } else {
+                    document.getElementById('adminTabBtn').classList.add('hidden');
+                }
+
+                initApp();
+            } else {
+                err.classList.remove('hidden');
+            }
+        });
+
+        function logout() {
+            APP_DATA.currentUser = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            switchTab('dashboard'); // reset tab
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function switchTab(tabId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`page-${tabId}`).classList.remove('hidden');
+            
+            // Update Tab Buttons UI
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-blue-600', 'bg-blue-100', 'dark:bg-blue-900/30', 'text-red-600', 'bg-red-100');
+                btn.classList.add('text-gray-600', 'dark:text-gray-300');
+                if(btn.id === 'adminTabBtn') btn.classList.add('text-red-600'); // restore default admin color
+            });
+
+            // Find clicked button based on onclick attribute and style it
+            const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-gray-600', 'dark:text-gray-300');
+                if(tabId === 'admin') {
+                    activeBtn.classList.add('active', 'text-red-600', 'bg-red-100', 'dark:bg-red-900/30');
+                } else {
+                    activeBtn.classList.add('active', 'text-blue-600', 'bg-blue-100', 'dark:bg-blue-900/30');
+                }
+            }
+
+            // Show/Hide centered Back Button
+            const backBtn = document.getElementById('backToDashContainer');
+            if (tabId === 'dashboard') {
+                backBtn.classList.add('hidden');
+            } else {
+                backBtn.classList.remove('hidden');
+            }
+
+            // Render specific tab content
+            if(tabId === 'dashboard') renderDashboard();
+            if(tabId === 'kamar') renderKamar();
+            if(tabId === 'penghuni') renderPenghuni();
+            if(tabId === 'penghasilan') renderPenghasilan();
+            if(tabId === 'grafik') renderChart();
+            if(tabId === 'admin') renderAdmins();
+        }
+
+        // --- APP INITIALIZATION ---
+        function initApp() {
+            populateFilters();
+            checkMonthlyStatus(); // Create payment objects for current month if not exist
+            renderDashboard();
+        }
+
+        function checkMonthlyStatus() {
+            const currentMonth = APP_DATA.currentMonthStr;
+            let updated = false;
+            APP_DATA.residents.forEach(r => {
+                if(r.active !== false) {
+                    if(!r.payments) {
+                        r.payments = {};
+                        updated = true;
+                    }
+                    if(!r.payments[currentMonth]) {
+                        r.payments[currentMonth] = { paid: false, fine: 0 };
+                        updated = true;
+                    }
+                }
+            });
+            if (updated) {
+                saveToLocalStorage();
+            }
+        }
+
+        function populateFilters() {
+            const mFilters = [document.getElementById('dashMonthFilter'), document.getElementById('incomeMonthFilter')];
+            const yFilters = [document.getElementById('dashYearFilter'), document.getElementById('incomeYearFilter'), document.getElementById('chartYearFilter')];
+            
+            let mHtml = `<option value="all">Semua Bulan</option>`;
+            monthNames.forEach((m, i) => {
+                let val = String(i+1).padStart(2, '0');
+                mHtml += `<option value="${val}" ${val === currentMonthNum ? 'selected' : ''}>${m}</option>`;
+            });
+            mFilters.forEach(el => { if(el) el.innerHTML = mHtml; });
+
+            let yHtml = `<option value="all">Semua Tahun</option>`;
+            // Provide years from 2024 to current + 2
+            for(let y = 2024; y <= currentYear + 2; y++) {
+                yHtml += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`;
+            }
+            yFilters.forEach(el => { 
+                if(el) {
+                    if(el.id === 'chartYearFilter') {
+                        // Chart requires a specific year, no "all"
+                        el.innerHTML = yHtml.replace('<option value="all">Semua Tahun</option>', '');
+                    } else {
+                        el.innerHTML = yHtml; 
+                    }
+                }
+            });
+
+            // Listeners for auto-update
+            document.getElementById('dashMonthFilter').addEventListener('change', renderDashboard);
+            document.getElementById('dashYearFilter').addEventListener('change', renderDashboard);
+            document.getElementById('incomeMonthFilter').addEventListener('change', renderPenghasilan);
+            document.getElementById('incomeYearFilter').addEventListener('change', renderPenghasilan);
+            document.getElementById('chartYearFilter').addEventListener('change', renderChart);
+        }
+
+        function getResidentRoom(roomId) {
+            return APP_DATA.rooms.find(r => r.id === roomId) || { num: '?' };
+        }
+
+        function formatRp(num) {
+            return "Rp " + parseInt(num).toLocaleString('id-ID');
+        }
+
+        // --- DASHBOARD LOGIC ---
+        function renderDashboard() {
+            const mFilter = document.getElementById('dashMonthFilter').value;
+            const yFilter = document.getElementById('dashYearFilter').value;
+            
+            // Set current month text
+            let monthText = mFilter !== 'all' ? monthNames[parseInt(mFilter)-1] : 'Semua Bulan';
+            let yearText = yFilter !== 'all' ? yFilter : 'Semua Tahun';
+            document.getElementById('currentMonthName').innerText = `${monthText} ${yearText !== 'Semua Tahun' ? yearText : ''}`;
+
+            const targetMonthStr = (mFilter !== 'all' && yFilter !== 'all') ? `${yFilter}-${mFilter}` : APP_DATA.currentMonthStr;
+            const isCurrentViewingMonth = targetMonthStr === APP_DATA.currentMonthStr;
+
+            let activeResidents = APP_DATA.residents.filter(r => r.active !== false);
+            let totalPenghuni = activeResidents.length;
+            let totalKamar = APP_DATA.rooms.length;
+            let kamarKosong = totalKamar - totalPenghuni;
+
+            document.getElementById('dashTotalPenghuni').innerText = totalPenghuni;
+            document.getElementById('dashKamarKosong').innerText = kamarKosong;
+
+            let container = document.getElementById('dashCardsContainer');
+            container.innerHTML = '';
+            let totalIncome = 0;
+
+            // Sort residents by room number
+            activeResidents.sort((a,b) => getResidentRoom(a.roomId).num.localeCompare(getResidentRoom(b.roomId).num));
+
+            activeResidents.forEach(res => {
+                const room = getResidentRoom(res.roomId);
+                
+                // Determine payment status based on filters
+                let payData = null;
+                let isPaid = false;
+                let filterMatched = false;
+
+                if (mFilter === 'all' && yFilter === 'all') {
+                    // Show current month status by default if all selected
+                    payData = res.payments[APP_DATA.currentMonthStr];
+                    filterMatched = true;
+                } else if (mFilter !== 'all' && yFilter !== 'all') {
+                    // Specific month & year
+                    let checkStr = `${yFilter}-${mFilter}`;
+                    payData = res.payments[checkStr];
+                    if(payData) filterMatched = true;
+                } else {
+                    // Partial filter (e.g., all months of 2026). Aggregate logic simplifies to showing current status, calculating total separately.
+                    payData = res.payments[APP_DATA.currentMonthStr]; 
+                }
+
+                if(payData && payData.paid) {
+                    isPaid = true;
+                    // Only sum if it matches the specific filter exactly or if calculating all
+                    if (filterMatched) totalIncome += parseInt(res.price) + parseInt(payData.fine || 0);
+                }
+
+                // If partial filter (like all months of 2026), calculate total properly
+                if(yFilter !== 'all' && mFilter === 'all') {
+                    totalIncome = 0; // reset and recalc for whole year
+                    APP_DATA.residents.forEach(r => {
+                        for(let key in r.payments) {
+                            if(key.startsWith(yFilter) && r.payments[key].paid) {
+                                totalIncome += parseInt(r.price) + parseInt(r.payments[key].fine || 0);
+                            }
+                        }
+                    });
+                } else if (yFilter === 'all' && mFilter === 'all') {
+                    // Recalc ALL time
+                    totalIncome = 0;
+                    APP_DATA.residents.forEach(r => {
+                        for(let key in r.payments) {
+                            if(r.payments[key].paid) totalIncome += parseInt(r.price) + parseInt(r.payments[key].fine || 0);
+                        }
+                    });
+                }
+
+                // Due date logic
+                let isWarning = false;
+                if(!isPaid && isCurrentViewingMonth) {
+                    let dueDay = parseInt(res.due);
+                    let currentDay = today.getDate();
+                    if(currentDay >= dueDay - 3) isWarning = true; // 3 days warning
+                }
+
+                // Building the Card
+                const cardHtml = `
+                    <div class="id-card rounded-2xl p-0 flex overflow-hidden group hover:scale-[1.02] transition-transform duration-300 cursor-pointer relative" onclick="openResidentDetail('${res.id}')">
+                        <!-- Left Room Indicator -->
+                        <div class="w-1/3 bg-gradient-to-b from-blue-600 to-blue-800 text-white flex flex-col items-center justify-center p-4">
+                            <i class="fa-solid fa-door-closed text-3xl mb-2 opacity-50"></i>
+                            <h2 class="text-4xl font-black">${room.num}</h2>
+                            <span class="text-xs font-bold mt-1 uppercase opacity-80">Lt. ${room.floor}</span>
+                        </div>
+                        
+                        <!-- Right Content -->
+                        <div class="w-2/3 p-4 bg-white/5 dark:bg-black/10 flex flex-col justify-between">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-lg leading-tight uppercase truncate" title="${res.name}">${res.name}</h3>
+                                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400"><i class="fa-solid fa-phone mr-1"></i>${res.wa}</p>
+                                </div>
+                                <div class="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" title="Active"></div>
+                            </div>
+                            
+                            <div class="mt-4 space-y-2">
+                                <div class="flex justify-between items-center bg-gray-100 dark:bg-gray-800 p-2 rounded-lg" onclick="event.stopPropagation(); togglePayment('${res.id}', '${targetMonthStr}')">
+                                    <span class="text-xs font-bold uppercase">Status</span>
+                                    ${isPaid 
+                                        ? `<span class="bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400 text-xs font-bold px-2 py-1 rounded cursor-pointer hover:bg-green-200">SUDAH BAYAR</span>` 
+                                        : `<span class="bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400 text-xs font-bold px-2 py-1 rounded cursor-pointer hover:bg-red-200 shadow-[0_0_5px_rgba(239,68,68,0.5)]">BELUM BAYAR</span>`
+                                    }
+                                </div>
+                                <div class="flex justify-between items-center text-xs font-bold">
+                                    <span class="text-gray-500 uppercase">Jatuh Tempo</span>
+                                    <span class="${isWarning ? 'text-red-600 dark:text-red-400 animate-pulse' : ''}">${res.due} ${monthNames[parseInt(mFilter !== 'all' ? mFilter : currentMonthNum)-1]}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+
+            document.getElementById('dashPendapatan').innerText = formatRp(totalIncome);
+        }
+
+        function togglePayment(resId, monthStr) {
+            const res = APP_DATA.residents.find(r => r.id === resId);
+            if(!res.payments[monthStr]) res.payments[monthStr] = { paid: false, fine: 0 };
+            
+            res.payments[monthStr].paid = !res.payments[monthStr].paid;
+            saveToLocalStorage();
+            renderDashboard(); // Re-render to update UI
+        }
+
+        // --- KAMAR LOGIC ---
+        function renderKamar() {
+            let containerBawah = document.getElementById('kamarLantaiBawah');
+            let containerAtas = document.getElementById('kamarLantaiAtas');
+            containerBawah.innerHTML = '';
+            containerAtas.innerHTML = '';
+
+            // Sort rooms
+            APP_DATA.rooms.sort((a,b) => a.num.localeCompare(b.num));
+
+            APP_DATA.rooms.forEach(room => {
+                // Find resident
+                let res = APP_DATA.residents.find(r => r.roomId === room.id && r.active !== false);
+                let isOccupied = !!res;
+                
+                let isPaid = false;
+                if(res && res.payments && res.payments[APP_DATA.currentMonthStr] && res.payments[APP_DATA.currentMonthStr].paid) {
+                    isPaid = true;
+                }
+
+                let cardClass = isOccupied ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20";
+                let iconColor = isOccupied ? "text-green-500" : "text-red-500";
+                
+                let html = `
+                    <div class="relative border-2 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-transform hover:scale-105 shadow-sm ${cardClass}" 
+                         onclick="${isOccupied ? `openResidentDetail('${res.id}')` : `editRoom('${room.id}')`}">
+                        
+                        ${isOccupied ? `
+                            <div class="absolute top-2 right-2 w-3 h-3 rounded-full ${isPaid ? 'bg-green-500' : 'bg-red-500'} shadow"></div>
+                        ` : ''}
+                        
+                        <i class="fa-solid fa-house-chimney text-4xl mb-2 ${iconColor}"></i>
+                        <h4 class="font-black text-xl uppercase">${room.num}</h4>
+                        
+                        <div class="mt-2 text-center w-full">
+                            ${isOccupied ? `
+                                <div class="text-xs font-bold bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200 rounded px-1 py-0.5 truncate uppercase" title="${res.name}">${res.name}</div>
+                            ` : `
+                                <div class="text-xs font-bold bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 rounded px-1 py-0.5 uppercase">KOSONG</div>
+                            `}
+                        </div>
+                        
+                        <!-- Delete Room btn (only if empty) -->
+                        ${!isOccupied ? `
+                            <button onclick="event.stopPropagation(); deleteRoom('${room.id}')" class="absolute top-2 left-2 text-gray-400 hover:text-red-500">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+
+                if(room.floor === 'bawah') containerBawah.insertAdjacentHTML('beforeend', html);
+                else containerAtas.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function saveRoom() {
+            let num = document.getElementById('roomNum').value.trim();
+            let floor = document.getElementById('roomFloor').value;
+            if(!num) return alert("Nomor kamar wajib diisi!");
+            
+            APP_DATA.rooms.push({
+                id: 'R' + Date.now(),
+                num: num,
+                floor: floor
+            });
+            saveToLocalStorage();
+            closeModal('modalAddRoom');
+            renderKamar();
+        }
+
+        function deleteRoom(id) {
+            if(confirm("Hapus kamar ini?")) {
+                APP_DATA.rooms = APP_DATA.rooms.filter(r => r.id !== id);
+                saveToLocalStorage();
+                renderKamar();
+            }
+        }
+        function editRoom(id) {
+            // Placeholder if needed, mostly handled by add new
+        }
+
+        // --- PENGHUNI LOGIC ---
+        function renderPenghuni() {
+            let tbody = document.getElementById('tablePenghuni');
+            tbody.innerHTML = '';
+            
+            let activeResidents = APP_DATA.residents.filter(r => r.active !== false);
+            activeResidents.sort((a,b) => getResidentRoom(a.roomId).num.localeCompare(getResidentRoom(b.roomId).num));
+
+            activeResidents.forEach(res => {
+                let room = getResidentRoom(res.roomId);
+                let tr = `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td class="p-4"><span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 py-1 px-3 rounded font-black">${room.num}</span></td>
+                        <td class="p-4 uppercase cursor-pointer hover:text-blue-500" onclick="openResidentDetail('${res.id}')">${res.name}</td>
+                        <td class="p-4">${res.wa}</td>
+                        <td class="p-4">${res.status}</td>
+                        <td class="p-4">${res.entry}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="editResident('${res.id}')" class="text-blue-500 hover:text-blue-700 mx-1" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteResident('${res.id}')" class="text-red-500 hover:text-red-700 mx-1" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', tr);
+            });
+            populateRoomSelect();
+        }
+
+        function populateRoomSelect() {
+            let select = document.getElementById('resRoom');
+            select.innerHTML = '<option value="">-- Pilih Kamar Kosong --</option>';
+            APP_DATA.rooms.sort((a,b) => a.num.localeCompare(b.num)).forEach(room => {
+                let isOccupied = APP_DATA.residents.some(r => r.roomId === room.id && r.active !== false);
+                if(!isOccupied) {
+                    select.insertAdjacentHTML('beforeend', `<option value="${room.id}">${room.num} (Lt. ${room.floor})</option>`);
+                }
+            });
+        }
+
+        function saveResident() {
+            let form = document.getElementById('formResident');
+            if(!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            let id = document.getElementById('resId').value;
+            let data = {
+                name: document.getElementById('resName').value,
+                address: document.getElementById('resAddress').value,
+                wa: document.getElementById('resWa').value,
+                waParent: document.getElementById('resWaParent').value,
+                status: document.getElementById('resStatus').value,
+                roomId: document.getElementById('resRoom').value,
+                price: document.getElementById('resPrice').value,
+                entry: document.getElementById('resEntry').value,
+                due: document.getElementById('resDue').value,
+                notes: document.getElementById('resNotes').value,
+                active: true,
+                payments: {}
+            };
+
+            if(id) {
+                // Update
+                let idx = APP_DATA.residents.findIndex(r => r.id === id);
+                data.id = id;
+                data.payments = APP_DATA.residents[idx].payments; // keep history
+                APP_DATA.residents[idx] = data;
+            } else {
+                // Insert
+                data.id = 'P' + Date.now();
+                APP_DATA.residents.push(data);
+            }
+
+            saveToLocalStorage();
+            closeModal('modalAddResident');
+            checkMonthlyStatus(); // init payment obj
+            
+            // Show Success Modal
+            document.getElementById('modalSuccess').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('modalSuccessContent').classList.remove('scale-0');
+                document.getElementById('modalSuccessContent').classList.add('scale-100');
+            }, 10);
+
+            renderPenghuni();
+            renderDashboard(); // update dash count
+        }
+
+        function editResident(id) {
+            let res = APP_DATA.residents.find(r => r.id === id);
+            document.getElementById('resId').value = res.id;
+            document.getElementById('resName').value = res.name;
+            document.getElementById('resAddress').value = res.address;
+            document.getElementById('resWa').value = res.wa;
+            document.getElementById('resWaParent').value = res.waParent;
+            document.getElementById('resStatus').value = res.status;
+            
+            populateRoomSelect(); // refresh
+            // Inject current room even if occupied
+            let room = getResidentRoom(res.roomId);
+            document.getElementById('resRoom').insertAdjacentHTML('afterbegin', `<option value="${room.id}" selected>${room.num} (Lt. ${room.floor})</option>`);
+            
+            document.getElementById('resPrice').value = res.price;
+            document.getElementById('resEntry').value = res.entry;
+            document.getElementById('resDue').value = res.due;
+            document.getElementById('resNotes').value = res.notes;
+
+            document.getElementById('residentModalTitle').innerText = "Edit Data Penghuni";
+            openModal('modalAddResident');
+        }
+
+        function deleteResident(id) {
+            if(confirm("Yakin ingin menghapus data penghuni ini? Histori pembayaran akan hilang.")) {
+                let idx = APP_DATA.residents.findIndex(r => r.id === id);
+                APP_DATA.residents[idx].active = false;
+                APP_DATA.residents.splice(idx, 1);
+                saveToLocalStorage();
+                renderPenghuni();
+                renderDashboard();
+            }
+        }
+
+        function openResidentDetail(id) {
+            let res = APP_DATA.residents.find(r => r.id === id);
+            let room = getResidentRoom(res.roomId);
+            
+            let html = `
+                <div class="text-center mb-4">
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <h4 class="text-xl font-black mt-2 uppercase">${res.name}</h4>
+                    <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs">Kamar ${room.num}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b dark:border-gray-700 pb-2">
+                    <span class="text-gray-500">No. WA</span><span class="col-span-2">: ${res.wa}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b dark:border-gray-700 pb-2">
+                    <span class="text-gray-500">WA Ortu</span><span class="col-span-2">: ${res.waParent || '-'}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b dark:border-gray-700 pb-2">
+                    <span class="text-gray-500">Status</span><span class="col-span-2">: ${res.status}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b dark:border-gray-700 pb-2">
+                    <span class="text-gray-500">Alamat</span><span class="col-span-2">: ${res.address}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b dark:border-gray-700 pb-2">
+                    <span class="text-gray-500">Sewa/Bln</span><span class="col-span-2">: ${formatRp(res.price)}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b dark:border-gray-700 pb-2">
+                    <span class="text-gray-500">Masuk</span><span class="col-span-2">: ${res.entry}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b dark:border-gray-700 pb-2">
+                    <span class="text-gray-500">Jatuh Tempo</span><span class="col-span-2">: Tgl ${res.due}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <span class="text-gray-500">Ket</span><span class="col-span-2">: ${res.notes || '-'}</span>
+                </div>
+            `;
+            document.getElementById('viewResidentContent').innerHTML = html;
+            openModal('modalViewResident');
+        }
+
+        // --- PENGHASILAN LOGIC ---
+        function renderPenghasilan() {
+            let mFilter = document.getElementById('incomeMonthFilter').value;
+            let yFilter = document.getElementById('incomeYearFilter').value;
+            let tbody = document.getElementById('tablePenghasilan');
+            tbody.innerHTML = '';
+
+            let targetData = [];
+            let grandTotal = 0;
+
+            APP_DATA.residents.forEach(res => {
+                let room = getResidentRoom(res.roomId);
+                
+                // Iterate through all payments of this resident
+                for(let monthKey in res.payments) {
+                    let [pYear, pMonth] = monthKey.split('-');
+                    
+                    let matchMonth = mFilter === 'all' || pMonth === mFilter;
+                    let matchYear = yFilter === 'all' || pYear === yFilter;
+
+                    if(matchMonth && matchYear && res.payments[monthKey].paid) {
+                        let base = parseInt(res.price);
+                        let fine = parseInt(res.payments[monthKey].fine || 0);
+                        let total = base + fine;
+                        grandTotal += total;
+
+                        targetData.push({
+                            monthStr: `${monthNames[parseInt(pMonth)-1]} ${pYear}`,
+                            rawKey: monthKey,
+                            resId: res.id,
+                            room: room.num,
+                            name: res.name,
+                            base: base,
+                            fine: fine,
+                            total: total
+                        });
+                    }
+                }
+            });
+
+            // Sort by room
+            targetData.sort((a,b) => a.room.localeCompare(b.room));
+
+            targetData.forEach(item => {
+                let tr = `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                        <td class="p-4 whitespace-nowrap">${item.monthStr}</td>
+                        <td class="p-4"><span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 py-1 px-2 rounded">${item.room}</span></td>
+                        <td class="p-4 uppercase cursor-pointer hover:text-blue-500 truncate max-w-[150px]" onclick="openResidentDetail('${item.resId}')">${item.name}</td>
+                        <td class="p-4 text-right">${formatRp(item.base)}</td>
+                        <td class="p-4 text-right text-red-500">${formatRp(item.fine)}</td>
+                        <td class="p-4 text-right font-black text-green-600 dark:text-green-400">${formatRp(item.total)}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="openDendaModal('${item.resId}', '${item.rawKey}')" class="text-orange-500 hover:text-orange-700 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded text-xs">
+                                <i class="fa-solid fa-pen"></i> Denda
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', tr);
+            });
+
+            document.getElementById('totalFilteredIncome').innerText = formatRp(grandTotal);
+        }
+
+        function openDendaModal(resId, monthKey) {
+            let res = APP_DATA.residents.find(r => r.id === resId);
+            document.getElementById('dendaResId').value = resId;
+            document.getElementById('dendaMonth').value = monthKey;
+            document.getElementById('dendaName').value = res.name;
+            document.getElementById('dendaAmount').value = res.payments[monthKey].fine || 0;
+            openModal('modalAddDenda');
+        }
+
+        function saveDenda() {
+            let resId = document.getElementById('dendaResId').value;
+            let monthKey = document.getElementById('dendaMonth').value;
+            let amount = parseInt(document.getElementById('dendaAmount').value) || 0;
+
+            let res = APP_DATA.residents.find(r => r.id === resId);
+            if(res && res.payments[monthKey]) {
+                res.payments[monthKey].fine = amount;
+            }
+            saveToLocalStorage();
+            closeModal('modalAddDenda');
+            renderPenghasilan();
+            renderDashboard(); // updates top right card if current month affected
+        }
+
+        // --- GRAFIK LOGIC ---
+        function renderChart() {
+            let year = document.getElementById('chartYearFilter').value;
+            if(year === 'all') year = currentYear.toString(); // Default fallback
+
+            let monthlyTotals = Array(12).fill(0);
+            
+            APP_DATA.residents.forEach(res => {
+                for(let key in res.payments) {
+                    if(key.startsWith(year) && res.payments[key].paid) {
+                        let mIdx = parseInt(key.split('-')[1]) - 1;
+                        monthlyTotals[mIdx] += parseInt(res.price) + parseInt(res.payments[key].fine || 0);
+                    }
+                }
+            });
+
+            let yearlyTotal = monthlyTotals.reduce((a, b) => a + b, 0);
+            document.getElementById('chartTotalYear').innerText = formatRp(yearlyTotal);
+
+            // Trend Logic
+            let currMIdx = parseInt(currentMonthNum) - 1;
+            let prevMIdx = currMIdx - 1;
+            let trendHtml = '-';
+            if (prevMIdx >= 0 && year === currentYear.toString()) {
+                let currVal = monthlyTotals[currMIdx];
+                let prevVal = monthlyTotals[prevMIdx];
+                if (currVal > prevVal) {
+                    document.getElementById('trendIndicator').innerHTML = '<i class="fa-solid fa-arrow-up text-green-500"></i>';
+                    document.getElementById('trendText').innerText = 'Naik';
+                    document.getElementById('trendText').className = 'text-xl font-bold text-green-500';
+                } else if (currVal < prevVal) {
+                    document.getElementById('trendIndicator').innerHTML = '<i class="fa-solid fa-arrow-down text-red-500"></i>';
+                    document.getElementById('trendText').innerText = 'Turun';
+                    document.getElementById('trendText').className = 'text-xl font-bold text-red-500';
+                } else {
+                    document.getElementById('trendIndicator').innerHTML = '<i class="fa-solid fa-minus text-gray-500"></i>';
+                    document.getElementById('trendText').innerText = 'Stabil';
+                    document.getElementById('trendText').className = 'text-xl font-bold text-gray-500';
+                }
+            }
+
+            // Render Chart.js
+            const ctx = document.getElementById('incomeChart').getContext('2d');
+            
+            if(APP_DATA.chartInstance) {
+                APP_DATA.chartInstance.destroy();
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#9ca3af' : '#4b5563';
+
+            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)'); // blue-500
+            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+            APP_DATA.chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthNames.map(m => m.substring(0,3)),
+                    datasets: [{
+                        label: 'Pendapatan (Rp)',
+                        data: monthlyTotals,
+                        borderColor: '#3b82f6',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#3b82f6',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4 // Smooth curves
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatRp(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { 
+                                color: textColor,
+                                font: { weight: 'bold', family: 'Arial' },
+                                callback: function(value) { return value / 1000000 + 'M'; }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { weight: 'bold', family: 'Arial' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- ADMIN MAINTENANCE LOGIC ---
+        function renderAdmins() {
+            let tbody = document.getElementById('tableAdmins');
+            tbody.innerHTML = '';
+            APP_DATA.admins.forEach(adm => {
+                let tr = `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                        <td class="p-4">${adm.user}</td>
+                        <td class="p-4 uppercase">${adm.name}</td>
+                        <td class="p-4">${adm.wa}</td>
+                        <td class="p-4 text-center">
+                            ${adm.user !== 'admin2026' ? `
+                                <button onclick="deleteAdmin('${adm.id}')" class="text-red-500 hover:text-red-700 bg-red-100 dark:bg-red-900/30 px-3 py-1 rounded text-xs uppercase">Hapus</button>
+                            ` : `<span class="text-xs text-gray-500">SUPER ADMIN</span>`}
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', tr);
+            });
+        }
+
+        function saveAdmin() {
+            let u = document.getElementById('admUser').value;
+            let p = document.getElementById('admPass').value;
+            let n = document.getElementById('admName').value;
+            let w = document.getElementById('admWa').value;
+
+            if(!u || !p || !n) return alert("Data tidak lengkap!");
+
+            APP_DATA.admins.push({
+                id: Date.now(), user: u, pass: p, name: n, wa: w
+            });
+            saveToLocalStorage();
+            closeModal('modalAddAdmin');
+            renderAdmins();
+        }
+
+        function deleteAdmin(id) {
+            if(confirm("Hapus admin ini?")) {
+                APP_DATA.admins = APP_DATA.admins.filter(a => a.id != id);
+                saveToLocalStorage();
+                renderAdmins();
+            }
+        }
+
+        // --- MODAL UTILS ---
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'modalAddResident') {
+                if(!document.getElementById('resId').value) {
+                    document.getElementById('formResident').reset();
+                    document.getElementById('residentModalTitle').innerText = "Registrasi Penghuni Baru";
+                    populateRoomSelect();
+                }
+            }
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            if(id === 'modalAddResident') document.getElementById('resId').value = '';
+        }
+
+        // Force clear cache and forms on load
+        window.onload = () => {
+            document.getElementById('loginPassword').value = '';
+        }
+
+    </script>
+</body>
+</html>
